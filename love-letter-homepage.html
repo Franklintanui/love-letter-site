@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dear — A Sealed Love Letter</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF3EA;
+    --paper-deep:#F3E6D8;
+    --wine:#7A1F3D;
+    --wine-deep:#551328;
+    --poppy:#E24868;
+    --blush:#F6DCE1;
+    --ink:#2B1512;
+    --gold:#C89B5C;
+    --line: rgba(122,31,61,.18);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter',sans-serif; color:var(--ink); background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(122,31,61,.05) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+  .serif{font-family:'Instrument Serif', serif;}
+  .script{font-family:'Caveat',cursive;}
+  .kicker{color:var(--wine); letter-spacing:.16em; text-transform:uppercase; font-weight:700; font-size:.68rem;}
+  .seal-shadow{box-shadow: 0 10px 30px rgba(85,19,40,.25);}
+  .btn-primary{
+    background: var(--wine); color: var(--paper); transition: transform .18s ease, background .18s ease;
+    box-shadow: 0 10px 22px rgba(122,31,61,.28);
+  }
+  .btn-primary:hover{ background: var(--wine-deep); transform: translateY(-2px); }
+  .btn-outline{
+    border:1.5px solid var(--wine); color:var(--wine); transition: background .18s ease, color .18s ease;
+  }
+  .btn-outline:hover{ background: var(--wine); color: var(--paper); }
+
+  /* NAV */
+  .wordmark{ font-family:'Instrument Serif', serif; font-style:italic; }
+
+  /* HERO texture */
+  .hero-section{
+    background:
+      radial-gradient(ellipse at 18% 8%, rgba(226,72,104,.10), transparent 55%),
+      radial-gradient(ellipse at 85% 85%, rgba(200,155,92,.14), transparent 50%),
+      var(--paper);
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* ENVELOPE */
+  .envelope-stage{ perspective: 1400px; }
+  .envelope{
+    position:relative; width: min(360px, 82vw); aspect-ratio: 3/2; margin: 0 auto;
+  }
+  .env-back{
+    position:absolute; inset:0; border-radius:10px;
+    background: linear-gradient(155deg,#ffffff 0%, var(--paper) 100%);
+    box-shadow: 0 24px 60px rgba(85,19,40,.18), inset 0 0 0 1px rgba(122,31,61,.12);
+  }
+  .env-back::before, .env-back::after{
+    content:""; position:absolute; top:0; width:0; height:0;
+    border-top: 130px solid rgba(122,31,61,.06);
+  }
+  .env-back::before{ left:0; border-left: 180px solid transparent; }
+  .env-back::after{ right:0; border-right: 180px solid transparent; }
+  .env-letter{
+    position:absolute; left:7%; right:7%; bottom:5%; height:66%;
+    background: var(--paper);
+    background-image: repeating-linear-gradient(rgba(122,31,61,.05) 0 1px, transparent 1px 26px);
+    border-radius: 6px 6px 2px 2px;
+    box-shadow: 0 -6px 18px rgba(85,19,40,.08);
+    transform: translateY(14%);
+    transition: transform 1s cubic-bezier(.2,.75,.25,1);
+    z-index:2;
+    display:flex; align-items:flex-start; justify-content:center; padding-top: 14%;
+  }
+  .env-letter span{ font-family:'Caveat',cursive; font-size: clamp(1rem, 3.6vw, 1.35rem); color: var(--wine); opacity:.85; }
+  .env-flap{
+    position:absolute; top:0; left:0; right:0; height:62%;
+    background: linear-gradient(160deg, var(--wine) 0%, var(--wine-deep) 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transition: transform 1.05s cubic-bezier(.2,.8,.2,1);
+    z-index:3;
+  }
+  .envelope.opened .env-flap{ transform: rotateX(178deg) translateY(-2px); }
+  .envelope.opened .env-letter{ transform: translateY(-58%); }
+  .seal-btn{
+    position:absolute; left:50%; top:38%; transform:translate(-50%,-50%);
+    width:64px; height:64px; border-radius:50%;
+    background: radial-gradient(circle at 34% 30%, #E3BE83, var(--gold) 55%, #9c7739 100%);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    z-index:4; border:none; transition: transform .35s ease, opacity .5s ease;
+  }
+  .seal-btn:hover{ transform: translate(-50%,-50%) scale(1.06); }
+  .envelope.opened .seal-btn{ opacity:0; transform: translate(-50%,-50%) scale(.4) rotate(25deg); pointer-events:none; }
+  .seal-btn i{ color: var(--wine-deep); }
+  .hero-hint{ transition: opacity .4s ease; }
+  .envelope.opened ~ .hero-hint, .envelope.opened + .hero-hint{ opacity:0; }
+
+  /* LETTER SECTION */
+  .letter-sheet{
+    background: var(--paper);
+    background-image: repeating-linear-gradient(rgba(122,31,61,.055) 0 1px, transparent 1px 30px);
+    box-shadow: 0 20px 50px rgba(85,19,40,.12), 0 0 0 1px rgba(122,31,61,.08);
+    position:relative;
+  }
+  .letter-sheet::before{
+    content:""; position:absolute; left:38px; top:0; bottom:0; width:1px; background: rgba(226,72,104,.25);
+  }
+  .type-line{ min-height: 8.5rem; white-space:pre-line; }
+  .stamp{
+    position:absolute; top:22px; right:26px; width:58px; height:58px; border-radius:50%;
+    border: 2px dashed rgba(122,31,61,.35); display:flex; align-items:center; justify-content:center;
+    transform: rotate(9deg); color: var(--wine); opacity:.55;
+  }
+
+  /* MEMORIES - photo corner style */
+  .photo-card{ background:#fff; box-shadow: 0 14px 30px rgba(85,19,40,.14); position:relative; }
+  .photo-corner{ position:absolute; width:26px; height:26px; overflow:hidden; }
+  .photo-corner::before{
+    content:""; position:absolute; width:38px; height:38px; background: var(--gold); opacity:.85;
+    box-shadow: -2px 2px 4px rgba(0,0,0,.15);
+  }
+  .corner-tl{ top:-4px; left:-4px; } .corner-tl::before{ top:0; left:0; }
+  .corner-tr{ top:-4px; right:-4px; } .corner-tr::before{ top:0; right:0; }
+  .corner-bl{ bottom:-4px; left:-4px; } .corner-bl::before{ bottom:0; left:0; }
+  .corner-br{ bottom:-4px; right:-4px; } .corner-br::before{ bottom:0; right:0; }
+
+  /* DATE COUPONS - ticket stub */
+  .ticket{
+    position:relative; background: #fff; box-shadow: 0 10px 24px rgba(85,19,40,.1);
+    border-radius: 16px; transition: transform .25s ease, opacity .35s ease, filter .35s ease;
+  }
+  .ticket::after{
+    content:""; position:absolute; top:0; bottom:0; right:30%;
+    background-image: radial-gradient(circle, var(--paper) 4px, transparent 4.5px);
+    background-size: 100% 16px; width:1px; background-repeat: repeat-y;
+    border-left: 2px dashed rgba(122,31,61,.28);
+  }
+  .ticket::before{
+    content:""; position:absolute; right:calc(30% - 9px); top:-9px; width:18px; height:18px;
+    background: var(--paper); border-radius:50%;
+  }
+  .ticket.redeemed{ opacity:.5; filter: grayscale(.3); transform: rotate(-1deg) scale(.98); }
+  .ticket-tear{ transition: transform .55s cubic-bezier(.2,.8,.2,1), opacity .4s ease; }
+  .ticket.redeemed .ticket-tear{ transform: translateX(120%) rotate(6deg); opacity:0; }
+  .ticket-picked{ box-shadow: 0 0 0 2px var(--poppy), 0 14px 30px rgba(85,19,40,.18); }
+  .picked-ribbon{
+    position:absolute; top:-11px; left:16px; z-index:2; background: var(--poppy); color:#fff;
+    font-size:.65rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    padding:4px 10px; border-radius:999px; box-shadow:0 6px 14px rgba(226,72,104,.35);
+  }
+
+  /* GENERATED LINK BOX */
+  #generated-link-wrap{ display:none; }
+  #generated-link-wrap.show{ display:block; }
+  #generated-link{ font-family:'Inter',sans-serif; }
+  .wish-banner{
+    background: var(--blush); border:1px solid var(--line); border-radius: 18px;
+  }
+
+  /* SURPRISE / KEEPSAKE BOX */
+  .box-wrap{ perspective: 900px; }
+  .box{ transition: transform .6s cubic-bezier(.2,.8,.2,1), filter .4s ease; cursor:pointer; }
+  .box-wrap.opened .box{ transform: translateY(18px) rotateX(12deg) scale(.9); filter: blur(.5px); }
+  .box-lid{ transition: transform .7s cubic-bezier(.2,.8,.2,1); transform-origin:bottom; }
+  .box-wrap.opened .box-lid{ transform: translateY(-70px) rotate(-14deg); }
+
+  .reveal{ opacity:0; transform: translateY(20px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.visible{ opacity:1; transform: translateY(0); }
+
+  .confetti{ position:fixed; top:-16px; width:8px; height:14px; z-index:80; border-radius:2px; animation: fall 2.6s linear forwards; }
+  @keyframes fall{ to{ transform: translate(var(--x), 105vh) rotate(650deg); opacity:0; } }
+
+  .toast{ transform:translateY(120%); opacity:0; transition: transform .35s ease, opacity .35s ease; }
+  .toast.show{ transform:translateY(0); opacity:1; }
+
+  .lightbox{ background: rgba(43,21,18,.86); backdrop-filter: blur(6px); }
+
+  /* THEMES */
+  .theme-berry{ --wine:#5A1030; --wine-deep:#3C0A20; --poppy:#C22A5C; --paper:#FBEFE8; }
+  .theme-midnight{ --wine:#E8436C; --wine-deep:#F3A6BC; --paper:#241318; --paper-deep:#2E1920; --ink:#F8E9EC; --gold:#D9AE72; --line:rgba(232,67,108,.25); }
+  .theme-midnight body, body.theme-midnight{ background: var(--paper); }
+  body.theme-midnight{ background-image: radial-gradient(circle at 1px 1px, rgba(232,67,108,.08) 1px, transparent 0); }
+  body.theme-midnight .letter-sheet, body.theme-midnight .env-letter, body.theme-midnight .photo-card, body.theme-midnight .ticket{ color:#2B1512; }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{ animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="fixed top-0 z-40 w-full px-4 pt-4">
+  <nav class="mx-auto flex max-w-6xl items-center justify-between rounded-full px-5 py-3 sm:px-7" style="background:rgba(251,243,234,.85); border:1px solid var(--line); backdrop-filter: blur(10px);">
+    <a href="#home" class="wordmark text-2xl" style="color:var(--wine);">Dear,</a>
+    <div class="hidden items-center gap-6 text-sm font-medium md:flex" style="color:var(--wine);">
+      <a href="#letter" class="hover:opacity-70">The Letter</a>
+      <a href="#memories" class="hover:opacity-70">Memories</a>
+      <a href="#dates" class="hover:opacity-70">Date Tickets</a>
+      <a href="#surprise" class="hover:opacity-70">Keepsake</a>
+    </div>
+    <button id="music-toggle" class="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold btn-outline" type="button" aria-pressed="false">
+      <i data-lucide="music-2" class="h-4 w-4"></i><span id="music-label">Music off</span>
+    </button>
+  </nav>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section id="home" class="hero-section relative flex min-h-screen flex-col items-center justify-center px-5 pb-16 pt-32 text-center">
+    <p id="hero-kicker" class="kicker mb-4">A private letter, sealed for one person</p>
+    <h1 class="serif italic mx-auto max-w-3xl text-[2.6rem] leading-[1.05] sm:text-6xl" style="color:var(--wine-deep);">
+      Break the seal.<br>Read what I've been saving for you.
+    </h1>
+    <p class="mx-auto mt-5 max-w-md text-[15px] leading-7" style="color:var(--ink); opacity:.75;">
+      A page you build once and send once — a letter, a handful of memories, and a few dates worth keeping.
+    </p>
+    <div id="wish-banner" class="wish-banner mx-auto mt-6 hidden max-w-md p-4 text-left">
+      <p class="kicker">A wish, just for you</p>
+      <p id="wish-banner-text" class="script mt-2 text-xl leading-snug" style="color:var(--wine-deep);"></p>
+    </div>
+
+    <div class="envelope-stage mt-12">
+      <div class="envelope" id="envelope">
+        <div class="env-back"></div>
+        <div class="env-letter"><span>always, always —</span></div>
+        <div class="env-flap"></div>
+        <button class="seal-btn seal-shadow" id="seal-button" aria-label="Break the wax seal to open the envelope">
+          <i data-lucide="heart" class="h-6 w-6 fill-current"></i>
+        </button>
+      </div>
+    </div>
+    <p class="hero-hint mt-6 text-sm font-medium" style="color:var(--wine);">Tap the seal to open it</p>
+    <p id="hero-personal-name" class="script mt-2 text-xl" style="color:var(--poppy);" aria-live="polite"></p>
+  </section>
+
+  <!-- LETTER -->
+  <section id="letter" class="relative px-5 py-24">
+    <div class="mx-auto grid max-w-5xl gap-10 lg:grid-cols-[.7fr_1.3fr] lg:items-center">
+      <div class="reveal">
+        <p class="kicker">01 — Sealed and signed</p>
+        <h2 class="serif italic mt-4 text-4xl" style="color:var(--wine-deep);">The letter inside</h2>
+        <p class="mt-5 max-w-sm leading-7" style="opacity:.75;">Written slowly, on purpose. The kind of thing that's easier to say in ink than out loud.</p>
+      </div>
+      <article id="letter-card" class="letter-sheet reveal relative rounded-2xl p-8 pl-14 sm:p-12 sm:pl-16">
+        <div class="stamp"><i data-lucide="heart" class="h-5 w-5"></i></div>
+        <p id="letter-salutation" class="serif italic text-2xl" style="color:var(--wine-deep);">My dearest Jamie,</p>
+        <p id="typed-letter" class="type-line mt-6 leading-8" style="color:var(--ink);"></p>
+        <p id="letter-signoff" class="script mt-6 text-2xl" style="color:var(--wine);">— forever yours, Alex</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- MEMORIES -->
+  <section id="memories" class="px-5 py-24" style="background: var(--paper-deep);">
+    <div class="mx-auto max-w-6xl">
+      <div class="reveal mx-auto max-w-2xl text-center">
+        <p class="kicker">02 — Kept, not forgotten</p>
+        <h2 class="serif italic mt-4 text-4xl" style="color:var(--wine-deep);">It has always been you. It will always be you.</h2>
+        <p class="mt-4 leading-7" style="opacity:.75;">Two moments worth tucking into a drawer and keeping.</p>
+      </div>
+      <div class="mt-12 grid gap-8 md:grid-cols-2"></div>
+    </div>
+  </section>
+
+  <!-- DATE TICKETS -->
+  <section id="dates" class="px-5 py-24">
+    <div class="mx-auto max-w-6xl">
+      <div class="reveal flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+        <div>
+          <p class="kicker">03 — Redeem in person</p>
+          <h2 class="serif italic mt-4 text-4xl" style="color:var(--wine-deep);">Tickets for later</h2>
+        </div>
+        <p class="max-w-md leading-7" style="opacity:.75;">Tear one off whenever you're ready to cash it in.</p>
+      </div>
+
+      <div id="coupon-grid" class="mt-11 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <article class="ticket p-6" data-date="movie">
+          <div class="ticket-tear"></div>
+          <i data-lucide="film" class="h-6 w-6" style="color:var(--wine);"></i>
+          <h3 class="serif italic mt-5 text-xl" style="color:var(--wine-deep);">Movie night, your pick</h3>
+          <p class="mt-2 text-sm leading-6" style="opacity:.75;">Even if it's the one I've said no to twice.</p>
+          <button class="redeem-btn mt-6 rounded-full px-4 py-2 text-sm font-semibold btn-primary" type="button">Redeem ticket</button>
+        </article>
+        <article class="ticket p-6" data-date="picnic">
+          <div class="ticket-tear"></div>
+          <i data-lucide="trees" class="h-6 w-6" style="color:var(--wine);"></i>
+          <h3 class="serif italic mt-5 text-xl" style="color:var(--wine-deep);">A picnic, no phones</h3>
+          <p class="mt-2 text-sm leading-6" style="opacity:.75;">Blanket, bad wine, good bread.</p>
+          <button class="redeem-btn mt-6 rounded-full px-4 py-2 text-sm font-semibold btn-primary" type="button">Redeem ticket</button>
+        </article>
+        <article class="ticket p-6" data-date="museum">
+          <div class="ticket-tear"></div>
+          <i data-lucide="landmark" class="h-6 w-6" style="color:var(--wine);"></i>
+          <h3 class="serif italic mt-5 text-xl" style="color:var(--wine-deep);">A museum, slowly</h3>
+          <p class="mt-2 text-sm leading-6" style="opacity:.75;">We read every plaque, I promise.</p>
+          <button class="redeem-btn mt-6 rounded-full px-4 py-2 text-sm font-semibold btn-primary" type="button">Redeem ticket</button>
+        </article>
+        <article class="ticket p-6" data-date="coffee">
+          <div class="ticket-tear"></div>
+          <i data-lucide="coffee" class="h-6 w-6" style="color:var(--wine);"></i>
+          <h3 class="serif italic mt-5 text-xl" style="color:var(--wine-deep);">Coffee, the long version</h3>
+          <p class="mt-2 text-sm leading-6" style="opacity:.75;">No agenda, no glancing at the door.</p>
+          <button class="redeem-btn mt-6 rounded-full px-4 py-2 text-sm font-semibold btn-primary" type="button">Redeem ticket</button>
+        </article>
+        <article class="ticket p-6" data-date="icecream">
+          <div class="ticket-tear"></div>
+          <i data-lucide="ice-cream-bowl" class="h-6 w-6" style="color:var(--wine);"></i>
+          <h3 class="serif italic mt-5 text-xl" style="color:var(--wine-deep);">Ice cream at midnight</h3>
+          <p class="mt-2 text-sm leading-6" style="opacity:.75;">Whatever flavor is left when we get there.</p>
+          <button class="redeem-btn mt-6 rounded-full px-4 py-2 text-sm font-semibold btn-primary" type="button">Redeem ticket</button>
+        </article>
+        <article class="ticket p-6" data-date="stars">
+          <div class="ticket-tear"></div>
+          <i data-lucide="star" class="h-6 w-6" style="color:var(--wine);"></i>
+          <h3 class="serif italic mt-5 text-xl" style="color:var(--wine-deep);">A night on the roof</h3>
+          <p class="mt-2 text-sm leading-6" style="opacity:.75;">Just to see how many stars we can name wrong.</p>
+          <button class="redeem-btn mt-6 rounded-full px-4 py-2 text-sm font-semibold btn-primary" type="button">Redeem ticket</button>
+        </article>
+      </div>
+
+      <form id="custom-coupon-form" class="reveal mt-10 rounded-2xl p-6 sm:p-8" style="background:var(--paper-deep); border:1px solid var(--line);">
+        <h3 class="serif italic text-2xl" style="color:var(--wine-deep);">Write your own ticket</h3>
+        <div class="mt-5 grid gap-4 md:grid-cols-[1fr_1fr_auto]">
+          <div>
+            <label class="mb-2 block text-sm font-semibold" for="coupon-name" style="color:var(--wine);">The date</label>
+            <input id="coupon-name" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color:var(--line); background:#fff;" required>
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-semibold" for="coupon-detail" style="color:var(--wine);">The detail</label>
+            <input id="coupon-detail" class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color:var(--line); background:#fff;" required>
+          </div>
+          <button class="rounded-xl px-5 py-3 font-semibold btn-primary self-end" type="submit">Add ticket</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- SURPRISE / KEEPSAKE -->
+  <section id="surprise" class="px-5 py-24 text-center" style="background: var(--paper-deep);">
+    <div class="mx-auto max-w-2xl">
+      <div class="reveal">
+        <p class="kicker">04 — One last thing</p>
+        <h2 class="serif italic mt-4 text-4xl" style="color:var(--wine-deep);">There's a keepsake in here too</h2>
+        <p class="mx-auto mt-4 max-w-lg leading-7" style="opacity:.75;">Lift the lid whenever you're ready.</p>
+      </div>
+      <div id="box-wrap" class="box-wrap reveal mx-auto mt-11 max-w-sm">
+        <button id="box-button" class="box relative block w-full rounded-2xl p-4" style="background:#fff; box-shadow:0 20px 45px rgba(85,19,40,.18);" type="button" aria-expanded="false">
+          <div class="box-lid absolute left-[8%] right-[8%] top-3 z-10 h-12 rounded-xl" style="background:var(--gold);"></div>
+          <img src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=700&q=80" class="w-full rounded-xl object-cover" style="aspect-ratio:1/.9;" loading="lazy" alt="Keepsake box">
+          <div class="absolute inset-x-0 bottom-8 mx-auto flex w-max items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold" style="background:rgba(255,255,255,.9); color:var(--wine-deep);">
+            <i data-lucide="gift" class="h-4 w-4"></i><span>Lift the lid</span>
+          </div>
+        </button>
+      </div>
+      <div id="final-message" class="hidden mx-auto mt-8 max-w-2xl rounded-2xl p-8" style="background:#fff; box-shadow:0 14px 30px rgba(85,19,40,.14);">
+        <p class="serif italic text-2xl" style="color:var(--wine-deep);">One more thing —</p>
+        <p class="mt-4 leading-7">Every letter needs a last line, and mine is this: however this page found you, I meant every word of it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PERSONALIZE / CREATE A WISH -->
+  <section id="personalize" class="px-5 py-24">
+    <div class="mx-auto max-w-5xl rounded-2xl p-7 sm:p-10" style="background:#fff; border:1px solid var(--line);">
+      <div class="grid gap-8 lg:grid-cols-[.8fr_1.2fr]">
+        <div>
+          <p class="kicker">Make it yours</p>
+          <h2 class="serif italic mt-4 text-3xl" style="color:var(--wine-deep);">Write her a wish, pick a date, send the link</h2>
+          <p class="mt-4 leading-7" style="opacity:.75;">Fill this in, choose one date idea to highlight for her, and generate a private link. Send it however you like — text, DM, email — and she'll open the whole experience made just for her.</p>
+        </div>
+        <form id="personal-form" class="space-y-5">
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label class="mb-2 block text-sm font-semibold" style="color:var(--wine);" for="name-one">From</label>
+              <input id="name-one" class="w-full rounded-xl border px-4 py-3" style="border-color:var(--line);" value="Alex">
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-semibold" style="color:var(--wine);" for="name-two">To</label>
+              <input id="name-two" class="w-full rounded-xl border px-4 py-3" style="border-color:var(--line);" value="Jamie">
+            </div>
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-semibold" style="color:var(--wine);" for="wish-message">Your wish for her</label>
+            <textarea id="wish-message" rows="3" class="w-full rounded-xl border px-4 py-3" style="border-color:var(--line);" placeholder="e.g. I wish for a lifetime of ordinary Tuesdays with you."></textarea>
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-semibold" style="color:var(--wine);" for="date-select">Pick a date idea to highlight for her</label>
+            <select id="date-select" class="w-full rounded-xl border px-4 py-3 bg-white" style="border-color:var(--line);">
+              <option value="">No date picked yet</option>
+              <option value="movie">Movie night, your pick</option>
+              <option value="picnic">A picnic, no phones</option>
+              <option value="museum">A museum, slowly</option>
+              <option value="coffee">Coffee, the long version</option>
+              <option value="icecream">Ice cream at midnight</option>
+              <option value="stars">A night on the roof</option>
+            </select>
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-semibold" style="color:var(--wine);" for="song-name">Our song (optional)</label>
+            <input id="song-name" class="w-full rounded-xl border px-4 py-3" style="border-color:var(--line);" placeholder="e.g. Something you both know by heart">
+          </div>
+          <fieldset>
+            <legend class="mb-3 block text-sm font-semibold" style="color:var(--wine);">Paper color</legend>
+            <div class="flex flex-wrap gap-3">
+              <button type="button" data-theme="rose" class="rounded-full border px-4 py-2 text-sm font-semibold" style="border-color:var(--line); background:#F6DCE1; color:#7A1F3D;">Rose</button>
+              <button type="button" data-theme="berry" class="rounded-full border px-4 py-2 text-sm font-semibold" style="border-color:var(--line); background:#EBC9D4; color:#5A1030;">Berry</button>
+              <button type="button" data-theme="midnight" class="rounded-full border px-4 py-2 text-sm font-semibold" style="border-color:var(--line); background:#241318; color:#F3A6BC;">Midnight</button>
+            </div>
+          </fieldset>
+          <button class="inline-flex items-center gap-2 rounded-xl px-5 py-3 font-semibold btn-primary" type="submit">
+            <i data-lucide="link" class="h-4 w-4"></i><span>Generate her link</span>
+          </button>
+
+          <div id="generated-link-wrap" class="rounded-xl p-4" style="background:var(--paper-deep); border:1px solid var(--line);">
+            <label class="mb-2 block text-sm font-semibold" style="color:var(--wine);" for="generated-link">Her personal link — copy and send it</label>
+            <div class="flex flex-col gap-2 sm:flex-row">
+              <input id="generated-link" readonly class="w-full rounded-xl border px-4 py-3 text-sm" style="border-color:var(--line); background:#fff;">
+              <button id="copy-link-btn" type="button" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold btn-outline">
+                <i data-lucide="copy" class="h-4 w-4"></i><span>Copy link</span>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="px-5 py-10 text-center text-sm" style="color:var(--wine); opacity:.7;">
+  <p>Sealed with care. Made for two people, one page at a time.</p>
+</footer>
+
+<div id="lightbox" class="lightbox fixed inset-0 z-[70] hidden items-center justify-center p-4" role="dialog" aria-modal="true">
+  <button id="lightbox-close" class="absolute right-5 top-5 rounded-full bg-white p-3" style="color:var(--wine-deep);" type="button"><i data-lucide="x" class="h-5 w-5"></i></button>
+  <div class="max-h-[85%] max-w-2xl overflow-hidden rounded-2xl bg-white p-3 shadow-2xl">
+    <img id="lightbox-image" class="w-full max-h-[70vh] rounded-xl object-contain" alt="">
+  </div>
+</div>
+
+<div id="toast" class="toast fixed bottom-5 left-1/2 z-[90] -translate-x-1/2 rounded-full px-5 py-3 text-sm font-semibold text-white shadow-xl" style="background:var(--wine-deep);" role="status" aria-live="polite"></div>
+
+<template id="custom-ticket-template">
+  <article class="ticket p-6">
+    <div class="ticket-tear"></div>
+    <i data-lucide="heart" class="h-6 w-6" style="color:var(--wine);"></i>
+    <h3 class="custom-name serif italic mt-5 text-xl" style="color:var(--wine-deep);"></h3>
+    <p class="custom-detail mt-2 text-sm leading-6" style="opacity:.75;"></p>
+    <button class="redeem-btn mt-6 rounded-full px-4 py-2 text-sm font-semibold btn-primary" type="button">Redeem ticket</button>
+  </article>
+</template>
+
+<script>
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  let audioContext, musicTimer, musicPlaying = false, typedStarted = false;
+  let letterText = "Every ordinary day feels softer because you're in it. Thank you for the laughter, the little adventures, and the kind of love that makes a place feel like home. Here's to every page still waiting to be written.";
+
+  function showToast(message){
+    const toast = $('#toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(window.toastTimer);
+    window.toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  function toggleMusic(){
+    if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    if (musicPlaying){
+      clearInterval(musicTimer); musicPlaying = false;
+      $('#music-toggle').setAttribute('aria-pressed','false');
+      $('#music-label').textContent = 'Music off';
+      showToast('Music paused.');
+      return;
+    }
+    const playChord = () => {
+      const now = audioContext.currentTime;
+      [261.63, 329.63, 392].forEach((freq, i) => {
+        const osc = audioContext.createOscillator(), gain = audioContext.createGain();
+        osc.type = 'sine'; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(.0001, now);
+        gain.gain.exponentialRampToValueAtTime(.025, now + .15);
+        gain.gain.exponentialRampToValueAtTime(.0001, now + 1.9);
+        osc.connect(gain).connect(audioContext.destination);
+        osc.start(now + i * .06); osc.stop(now + 2);
+      });
+    };
+    audioContext.resume(); playChord(); musicTimer = setInterval(playChord, 2400);
+    musicPlaying = true;
+    $('#music-toggle').setAttribute('aria-pressed','true');
+    $('#music-label').textContent = 'Music on';
+    showToast('Ambient music is playing.');
+  }
+
+  function typeLetter(){
+    if (typedStarted) return;
+    typedStarted = true;
+    const target = $('#typed-letter'); let i = 0;
+    const timer = setInterval(() => {
+      target.textContent += letterText[i] || '';
+      i++;
+      if (i >= letterText.length) clearInterval(timer);
+    }, 18);
+  }
+
+  function openEnvelope(){
+    const env = $('#envelope');
+    if (env.classList.contains('opened')) return;
+    env.classList.add('opened');
+    $('#seal-button').disabled = true;
+    setTimeout(() => document.querySelector('#letter').scrollIntoView({behavior:'smooth'}), 900);
+  }
+
+  function redeemTicket(button){
+    const card = button.closest('.ticket');
+    if (card.classList.contains('redeemed')) return;
+    card.classList.add('redeemed');
+    button.disabled = true;
+    showToast('Ticket redeemed — go make it happen.');
+  }
+
+  function launchConfetti(){
+    const colors = ['#E24868','#F6DCE1','#C89B5C','#ffffff','#7A1F3D'];
+    for (let i = 0; i < 40; i++){
+      const bit = document.createElement('span');
+      bit.className = 'confetti';
+      bit.style.left = Math.random()*100 + '%';
+      bit.style.background = colors[i % colors.length];
+      bit.style.setProperty('--x', (Math.random()*220-110)+'px');
+      bit.style.animationDelay = Math.random()*.4 + 's';
+      document.body.appendChild(bit);
+      setTimeout(() => bit.remove(), 3200);
+    }
+  }
+
+  let selectedTheme = 'rose';
+  const dateLabels = {
+    movie: 'Movie night, your pick', picnic: 'A picnic, no phones', museum: 'A museum, slowly',
+    coffee: 'Coffee, the long version', icecream: 'Ice cream at midnight', stars: 'A night on the roof'
+  };
+
+  function updateNames(){
+    const one = $('#name-one').value.trim() || 'Alex', two = $('#name-two').value.trim() || 'Jamie';
+    $('#hero-personal-name').textContent = `for ${two}, from ${one}`;
+  }
+
+  function highlightDate(dateId){
+    $$('.ticket').forEach(t => {
+      t.classList.remove('ticket-picked');
+      const ribbon = t.querySelector('.picked-ribbon'); if (ribbon) ribbon.remove();
+    });
+    if (!dateId) return;
+    const match = document.querySelector(`.ticket[data-date="${dateId}"]`);
+    if (!match) return;
+    match.classList.add('ticket-picked');
+    const ribbon = document.createElement('div');
+    ribbon.className = 'picked-ribbon';
+    ribbon.textContent = 'Picked for you';
+    match.style.position = 'relative';
+    match.prepend(ribbon);
+  }
+
+  function applyIncomingWish(){
+    const params = new URLSearchParams(window.location.search);
+    const to = params.get('to'), from = params.get('from'), wish = params.get('wish');
+    const date = params.get('date'), song = params.get('song'), theme = params.get('theme');
+
+    if (!to && !from && !wish && !date && !theme) return;
+
+    if (to) $('#name-two').value = to;
+    if (from) $('#name-one').value = from;
+    if (song) $('#song-name').value = song;
+    if (date) $('#date-select').value = date;
+    updateNames();
+
+    if (to) $('#letter-salutation').textContent = `My dearest ${to},`;
+    if (from) $('#letter-signoff').textContent = `— forever yours, ${from}`;
+    if (to || from) $('#hero-kicker').textContent = `A private wish for ${to || 'you'}, from ${from || 'someone who loves you'}`;
+
+    if (wish){
+      letterText = wish;
+      $('#wish-banner-text').textContent = `“${wish}”`;
+      $('#wish-banner').classList.remove('hidden');
+    }
+
+    if (date){
+      highlightDate(date);
+      $('#date-select').value = date;
+    }
+
+    if (theme && (theme === 'berry' || theme === 'midnight')){
+      document.body.classList.add('theme-' + theme);
+      selectedTheme = theme;
+    }
+  }
+
+  function buildShareLink(){
+    const one = $('#name-one').value.trim() || 'Alex', two = $('#name-two').value.trim() || 'Jamie';
+    const wish = $('#wish-message').value.trim();
+    const date = $('#date-select').value;
+    const song = $('#song-name').value.trim();
+
+    const params = new URLSearchParams();
+    params.set('from', one);
+    params.set('to', two);
+    if (wish) params.set('wish', wish);
+    if (date) params.set('date', date);
+    if (song) params.set('song', song);
+    if (selectedTheme !== 'rose') params.set('theme', selectedTheme);
+
+    const url = new URL(window.location.href);
+    url.search = params.toString();
+    return url.toString();
+  }
+
+  async function shareExperience(e){
+    e.preventDefault();
+    const link = buildShareLink();
+    const two = $('#name-two').value.trim() || 'Jamie';
+
+    $('#generated-link').value = link;
+    $('#generated-link-wrap').classList.add('show');
+
+    try{
+      if (navigator.share){
+        await navigator.share({ title: 'A Sealed Letter', text: `A private letter and a date idea for ${two}`, url: link });
+        showToast('Ready to share.');
+      } else if (navigator.clipboard){
+        await navigator.clipboard.writeText(link);
+        showToast('Her link was copied — go ahead and send it.');
+      } else {
+        showToast('Her link is ready below — copy and send it.');
+      }
+    }catch(err){ if (err.name !== 'AbortError') showToast('Her link is ready below — copy and send it.'); }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    $('#music-toggle').addEventListener('click', toggleMusic);
+    $('#seal-button').addEventListener('click', openEnvelope);
+
+    $$('.reveal').forEach(el => new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    }), {threshold:.14}).observe(el));
+
+    new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) typeLetter();
+    }), {threshold:.35}).observe($('#letter-card'));
+
+    $$('.photo-card img').forEach(img => img.addEventListener('click', () => {
+      $('#lightbox-image').src = img.src;
+      $('#lightbox').classList.remove('hidden'); $('#lightbox').classList.add('flex');
+    }));
+    $('#lightbox-close').addEventListener('click', () => { $('#lightbox').classList.add('hidden'); $('#lightbox').classList.remove('flex'); });
+    $('#lightbox').addEventListener('click', e => { if (e.target.id === 'lightbox') $('#lightbox-close').click(); });
+
+    $$('.redeem-btn').forEach(btn => btn.addEventListener('click', () => redeemTicket(btn)));
+    $('#custom-coupon-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const name = $('#coupon-name'), detail = $('#coupon-detail');
+      if (!name.value.trim() || !detail.value.trim()) return;
+      const clone = $('#custom-ticket-template').content.cloneNode(true);
+      clone.querySelector('.custom-name').textContent = name.value.trim();
+      clone.querySelector('.custom-detail').textContent = detail.value.trim();
+      const btn = clone.querySelector('.redeem-btn'); btn.addEventListener('click', () => redeemTicket(btn));
+      $('#coupon-grid').appendChild(clone); lucide.createIcons();
+      name.value = ''; detail.value = ''; showToast('Ticket added.');
+    });
+
+    $('#box-button').addEventListener('click', () => {
+      const wrap = $('#box-wrap');
+      if (wrap.classList.contains('opened')) return;
+      wrap.classList.add('opened');
+      $('#box-button').setAttribute('aria-expanded','true');
+      $('#final-message').classList.remove('hidden');
+      launchConfetti();
+      showToast('Keepsake unlocked.');
+    });
+
+    ['name-one','name-two'].forEach(id => $('#'+id).addEventListener('input', updateNames));
+    updateNames();
+
+    $$('[data-theme]').forEach(btn => btn.addEventListener('click', () => {
+      document.body.classList.remove('theme-berry','theme-midnight');
+      selectedTheme = btn.dataset.theme;
+      if (selectedTheme !== 'rose') document.body.classList.add('theme-'+selectedTheme);
+      showToast(btn.textContent.trim() + ' paper selected.');
+    }));
+
+    $('#personal-form').addEventListener('submit', shareExperience);
+
+    $('#copy-link-btn').addEventListener('click', async () => {
+      const input = $('#generated-link');
+      input.select(); input.setSelectionRange(0, 99999);
+      try{
+        if (navigator.clipboard){ await navigator.clipboard.writeText(input.value); showToast('Link copied.'); }
+        else { document.execCommand('copy'); showToast('Link copied.'); }
+      }catch(err){ showToast('Select and copy the link above.'); }
+    });
+
+    applyIncomingWish();
+  });
+</script>
+</body>
+</html>
